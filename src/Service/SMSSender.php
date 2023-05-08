@@ -2,25 +2,20 @@
 
 namespace App\Service;
 
-use App\Model\Message;
+use App\Entity\Message;
 
 class SMSSender implements SenderInterface
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function supports(Message $message)
+    public function supports(Message $message): bool
     {
-        return $message->type == Message::TYPE_SMS;
+        return $message->type === Message::TYPE_SMS;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @param Message $message
      */
     public function send(Message $message)
     {
-        print "SMS";
+        print "Sending SMS" . PHP_EOL;
     }
 }

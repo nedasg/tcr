@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Customer;
+use App\Entity\Notification;
 use App\EntityRepository\CustomerRepository;
+use App\EntityRepository\NotificationRepository;
 use App\Model\Message;
-use App\Service\EmailSender;
 use App\Service\Messenger;
-use App\Service\SMSSender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,27 +25,15 @@ class CustomerController extends AbstractController
     }
 
     /**
-     * @Route("/customer/{customerCode}/notifications", name="customer_notifications", methods={"GET"})
+     * @Route("/customers/{customerCode}/messages", methods={"POST"})
      */
-    public function notifyCustomer(string $customerCode, Request $request, CustomerRepository $customerRepository): Response
+    public function notifyCustomer(string $customerCode, Request $request)
     {
-        $requestData = json_decode($request->getContent(), true);
-
-        /** @var Customer $customer */
-        $customer = $customerRepository->find($customerCode);
-
-        if (!$customer) {
-            throw $this->createNotFoundException(
-                sprintf('Customer not found (%s)', $customerCode)
-            );
-        }
-
-        $message = (new Message())
-            ->setBody($requestData ?? 'empty')
-            ->setType($customer->getNotificationType());
-
-        $this->messenger->send($message);
-
-        return new Response("OK");
+        $this->messenger->saveAndSend($request->getContent(), $customerCode);
     }
+
+    /**
+     * @Route("/customers/{customerCode}/messages/{id}", name="get_customer_message", methods={"GET"})
+     */
+    public function getCustomerMessage() {}
 }
