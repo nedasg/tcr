@@ -12,16 +12,13 @@ class Customer
 {
 
     /**
-     *
      * @ORM\Column(name="`customer_code`", type="string", length=32, nullable=false)
      *
      * @var string
      */
     public string $code;
 
-
     /**
-     *
      * @ORM\Column(name="`notification_type`", type="string", length=32)
      *
      * @var string

@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-
 use App\Model\Message;
 
 class Messenger
@@ -13,7 +12,6 @@ class Messenger
     protected $senders = [];
 
     /**
-     * Messenger constructor.
      * @param SenderInterface[] $senders
      */
     public function __construct(array $senders = [])

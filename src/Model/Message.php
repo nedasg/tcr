@@ -8,6 +8,7 @@ class Message
 {
     public const TYPE_SMS = 'sms';
     public const TYPE_EMAIL = 'email';
+
     /**
      * @Assert\NotBlank(message="body cannot be empty", payload="101")
      */

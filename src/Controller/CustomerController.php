@@ -8,21 +8,14 @@ use App\Model\Message;
 use App\Service\EmailSender;
 use App\Service\Messenger;
 use App\Service\SMSSender;
-use App\Service\Validator;
-use App\Service\WeatherService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- *
- */
 class CustomerController extends AbstractController
 {
-
     /**
-     *
      * @Route("/customer/{code}/notifications", name="customer_notifications", methods={"GET"})
      */
     public function notifyCustomer(string $code, Request $request): Response
