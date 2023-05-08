@@ -11,7 +11,7 @@ class SMSSender implements SenderInterface
      */
     public function supports(Message $message)
     {
-        return $message->type == Message::TYPE_EMAIL;
+        return $message->type == Message::TYPE_SMS;
     }
 
     /**

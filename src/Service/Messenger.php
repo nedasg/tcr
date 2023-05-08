@@ -11,12 +11,12 @@ class Messenger
      */
     protected $senders = [];
 
-    /**
-     * @param SenderInterface[] $senders
-     */
-    public function __construct(array $senders = [])
+    public function __construct()
     {
-        $this->senders = $senders;
+        $this->senders = [
+            new EmailSender(),
+            new SMSSender()
+        ];
     }
 
     /**
@@ -27,7 +27,7 @@ class Messenger
     {
         foreach ($this->senders as $sender) {
             if ($sender->supports($message)) {
-                return $sender->send($message);
+                $sender->send($message);
             }
         }
     }

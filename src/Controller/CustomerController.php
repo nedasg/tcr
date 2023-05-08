@@ -15,23 +15,36 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CustomerController extends AbstractController
 {
+    private Messenger $messenger;
+
     /**
-     * @Route("/customer/{code}/notifications", name="customer_notifications", methods={"GET"})
+     * @param \App\Service\Messenger $messenger
      */
-    public function notifyCustomer(string $code, Request $request): Response
+    public function __construct(Messenger $messenger) {
+        $this->messenger = $messenger;
+    }
+
+    /**
+     * @Route("/customer/{customerCode}/notifications", name="customer_notifications", methods={"GET"})
+     */
+    public function notifyCustomer(string $customerCode, Request $request, CustomerRepository $customerRepository): Response
     {
         $requestData = json_decode($request->getContent(), true);
 
-        $repository = new CustomerRepository();
         /** @var Customer $customer */
-        $customer = $repository->find($code);
+        $customer = $customerRepository->find($customerCode);
 
-        $message = new Message();
-        $message->setBody($customer->getNotificationType());
-        $message->setType($requestData->type);
+        if (!$customer) {
+            throw $this->createNotFoundException(
+                sprintf('Customer not found (%s)', $customerCode)
+            );
+        }
 
-        $messenger = new Messenger([new EmailSender(), new SMSSender()]);
-        $messenger->send($message);
+        $message = (new Message())
+            ->setBody($requestData ?? 'empty')
+            ->setType($customer->getNotificationType());
+
+        $this->messenger->send($message);
 
         return new Response("OK");
     }
