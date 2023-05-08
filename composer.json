@@ -5,6 +5,7 @@
         "php": ">=7.4.0",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-json": "*",
         "doctrine/annotations": "^1.11",
         "phpdocumentor/reflection-docblock": "^5.2",
         "symfony/console": "5.1.*",
@@ -28,7 +29,10 @@
         "preferred-install": {
             "*": "dist"
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "symfony/flex": true
+        }
     },
     "autoload": {
         "psr-4": {
