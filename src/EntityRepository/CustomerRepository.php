@@ -3,8 +3,8 @@
 namespace App\EntityRepository;
 
 use App\Entity\Customer;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity

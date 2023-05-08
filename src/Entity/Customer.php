@@ -10,35 +10,39 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Customer
 {
-
     /**
-     * @ORM\Column(name="`customer_code`", type="string", length=32, nullable=false)
+     * @ORM\Id
+     * @ORM\Column(type="string", length=32, nullable=false, unique=true)
      *
      * @var string
      */
-    public string $code;
+    public string $customerCode;
 
     /**
-     * @ORM\Column(name="`notification_type`", type="string", length=32)
+     * @ORM\Column(type="string", length=32)
      *
      * @var string
      */
-    public string $notification_type = Message::TYPE_EMAIL;
+    public string $notificationType = Message::TYPE_EMAIL;
 
     /**
      * @return string
      */
-    public function getCode(): string
+    public function getCustomerCode(): ?string
     {
-        return $this->code;
+        return $this->customerCode;
     }
 
     /**
-     * @param string $code
+     * @param string $customerCode
+     *
+     * @return \App\Entity\Customer
      */
-    public function setCode(string $code): void
+    public function setCustomerCode(string $customerCode): self
     {
-        $this->code = $code;
+        $this->customerCode = $customerCode;
+
+        return $this;
     }
 
     /**
@@ -46,14 +50,14 @@ class Customer
      */
     public function getNotificationType(): string
     {
-        return $this->notification_type;
+        return $this->notificationType;
     }
 
     /**
-     * @param string $notification_type
+     * @param string $notificationType
      */
-    public function setNotificationType(string $notification_type): void
+    public function setNotificationType(string $notificationType): void
     {
-        $this->notification_type = $notification_type;
+        $this->notificationType = $notificationType;
     }
 }
