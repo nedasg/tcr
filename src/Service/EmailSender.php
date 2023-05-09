@@ -6,8 +6,11 @@ use App\Entity\Message;
 
 class EmailSender implements SenderInterface
 {
+
     /**
-     * {@inheritDoc}
+     * @param \App\Entity\Message $message
+     *
+     * @return bool
      */
     public function supports(Message $message): bool
     {
@@ -15,8 +18,6 @@ class EmailSender implements SenderInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @param Message $message
      */
     public function send(Message $message)

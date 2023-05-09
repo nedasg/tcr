@@ -3,45 +3,35 @@
 namespace App\Service;
 
 use App\Entity\Customer;
-use App\EntityRepository\CustomerRepository;
 use App\Entity\Message;
-use Doctrine\ORM\EntityManagerInterface;
-use HttpException;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class Messenger
 {
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
-    private EntityManagerInterface $entityManager;
-
-    /**
-     * @var \App\EntityRepository\CustomerRepository
-     */
-    private CustomerRepository $customerRepository;
-
-    /**
-     * @var \Symfony\Component\Routing\Generator\UrlGeneratorInterface
-     */
-    private UrlGeneratorInterface $urlGenerator;
+    protected MessageManager $messageManager;
+    protected MessageFormatter $messageFormatter;
+    protected MessageValidator $messageValidator;
 
     /**
      * @var SenderInterface[]
      */
-    protected $senders = [];
+    protected array $senders = [];
 
+    /**
+     * @param \App\Service\MessageManager $messageManager
+     * @param \App\Service\MessageFormatter $messageFormatter
+     * @param \App\Service\MessageValidator $messageValidator
+     */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        CustomerRepository $customerRepository,
-        UrlGeneratorInterface $urlGenerator
+        MessageManager $messageManager,
+        MessageFormatter $messageFormatter,
+        MessageValidator $messageValidator
     )
     {
-        $this->entityManager = $entityManager;
-        $this->customerRepository = $customerRepository;
-        $this->urlGenerator = $urlGenerator;
+        $this->messageManager = $messageManager;
+        $this->messageFormatter = $messageFormatter;
+        $this->messageValidator = $messageValidator;
 
         $this->senders = [
             new EmailSender(),
@@ -49,39 +39,34 @@ class Messenger
         ];
     }
 
-    public function saveAndSend(string $requestData, string $customerCode) {
-        try {
-            $customer = $this->customerRepository->find($customerCode);
-            if (!$customer) {
-                throw new HttpException('404', sprintf('Customer not found (%s).', $customerCode));
-            }
+    /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param \App\Entity\Customer $customer
+     *
+     * @return \App\Entity\Message
+     *
+     * @throws \Exception
+     */
+    public function sendMessage(Request $request, Customer $customer): Message
+    {
+        $this->messageValidator->validate($request);
 
-            $requestDataArray = json_decode($requestData, true);
-            $message = $this->createNewMessage($requestDataArray, $customer);
+        $message = $this->messageFormatter
+            ->getFormattedMessage($request->getContent(), $customer);
 
-            $this->notifyCustomer($message);
-        } catch (\Throwable $e) {
-            dd($e->getMessage());
-        }
+        $this->messageManager->save($message);
 
-        $this->sendResponse($message);
+        $this->send($message);
+
+        return $message;
     }
 
-    private function createNewMessage(array $requestDataArray, Customer $customer): ?Message {
-        if (!empty($requestDataArray['body'])) {
-            $message = (new Message())
-                ->setText($requestDataArray['body'])
-                ->setType($customer->getNotificationType())
-                ->setCustomer($customer);
-
-            $this->entityManager->persist($message);
-            $this->entityManager->flush();
-        }
-
-        return $message ?? null;
-    }
-
-    private function notifyCustomer(Message $message)
+    /**
+     * @param \App\Entity\Message $message
+     *
+     * @return void
+     */
+    private function send(Message $message)
     {
         foreach ($this->senders as $sender) {
             if ($sender->supports($message)) {
@@ -94,17 +79,5 @@ class Messenger
         throw new NotFoundHttpException(
             sprintf('Notification method "%s" is not supported.', $message->type)
         );
-    }
-
-    private function sendResponse(Message $message) {
-        $response = new Response('Customer notified', Response::HTTP_CREATED);
-
-        $url = $this->urlGenerator->generate('get_customer_message', [
-            'customerCode' => $message->getCustomer()->getCustomerCode(),
-            'id' => $message->getId()
-        ]);
-
-        $response->headers->set('Location', $url);
-        $response->send();
     }
 }
