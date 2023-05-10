@@ -15,9 +15,9 @@ class MessageValidator
     /**
      * @param \Symfony\Component\HttpFoundation\Request $request
      *
-     * @return void
+     * @return bool
      */
-    public function validate(Request $request)
+    public function validate(Request $request): bool
     {
         $validator = Validation::createValidator();
 
@@ -41,5 +41,7 @@ class MessageValidator
         if (count($violations) > 0) {
             throw new ValidationFailedException('', $violations);
         }
+
+        return true;
     }
 }

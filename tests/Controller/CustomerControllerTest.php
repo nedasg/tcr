@@ -21,7 +21,7 @@ class CustomerControllerTest extends KernelTestCase
      * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function testNotifyCustomer()
+    public function testNotifyCustomerExpectedResponse()
     {
         $randomCustomerCode = $this->getRandomCustomerCodeFromDB();
         if (!empty($randomCustomerCode)) {
