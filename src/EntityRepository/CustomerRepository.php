@@ -11,9 +11,15 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class CustomerRepository extends ServiceEntityRepository
 {
-    /**
-     * {@inheritDoc}
-     */
+    public function getAllCustomerCodes(): array
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->select('c.customerCode');
+        $query = $qb->getQuery();
+
+        return $query->getResult();
+    }
+
     public function getEntityClass(): string
     {
         return Customer::class;

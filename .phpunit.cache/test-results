@@ -1,0 +1,1 @@
+{"version":1,"defects":{"App\\tests\\Controller\\CustomerControllerTest::testNotifyCustomer":5,"App\\Tests\\Controller\\CustomerControllerTest::testNotifyCustomer":4},"times":{"App\\tests\\Controller\\CustomerControllerTest::testNotifyCustomer":0.362,"App\\Tests\\Controller\\CustomerControllerTest::testNotifyCustomer":9.083}}
